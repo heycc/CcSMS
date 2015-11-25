@@ -1,30 +1,24 @@
 package com.heycc.ccsms;
 
-import android.app.ListActivity;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.view.View;
-import android.widget.ArrayAdapter;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.Toast;
 
-public class MainActivity extends ListActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity {
+    //Define ListView
+    ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        String[] values = new String[]{"CC1", "CC2", "CC3"};
-        ArrayAdapter<String> aadapter = new ArrayAdapter<>(this,
-                R.layout.row_list_main, R.id.label, values);
-
-        setListAdapter(aadapter);
+        mListView = (ListView) findViewById(R.id.list);
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -38,23 +32,12 @@ public class MainActivity extends ListActivity
     }
 
     @Override
-    protected void onListItemClick(ListView lv, View v, int pos, long id) {
-        String item = (String) getListAdapter().getItem(pos);
-        Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }
