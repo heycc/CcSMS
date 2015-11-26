@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         convs = new ArrayList<>();
-        convs.add(new Conversation("Xi", "2015"));
-        convs.add(new Conversation("Amy", "2014"));
+        convs.add(new Conversation("Xi", "Love", "2015"));
+        convs.add(new Conversation("Amy", "Lovely", "2014"));
 
 
         mListView = (ListView) findViewById(R.id.list);

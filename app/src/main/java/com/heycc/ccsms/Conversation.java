@@ -5,10 +5,12 @@ package com.heycc.ccsms;
  */
 public class Conversation {
     public String title;
-    public String updateTime;
+    public String time;
+    public String msg;
 
-    public Conversation(String title, String time) {
+    public Conversation(String title, String msg, String time) {
         this.title = title;
-        this.updateTime = time;
+        this.time = time;
+        this.msg = msg;
     }
 }
