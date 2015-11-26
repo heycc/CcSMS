@@ -7,14 +7,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //Define ListView
     ListView mListView;
-    String[] countries = new String[]{"China", "Turkey", "United States"};
+
+    ArrayList<Conversation> convs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +25,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        convs = new ArrayList<>();
+        convs.add(new Conversation("Xi", "2015"));
+        convs.add(new Conversation("Amy", "2014"));
+
+
         mListView = (ListView) findViewById(R.id.list);
-        mListView.setAdapter(new ArrayAdapter<>(this, R.layout.row_list_main, countries));
+        mListView.setAdapter(new ConversationAdapter(this, convs));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> av, View v, int p, long id) {
-                String item = (String) av.getItemAtPosition(p);
-                Toast.makeText(getApplicationContext(), item + " selected", Toast.LENGTH_LONG).show();
+                Conversation item = (Conversation) av.getItemAtPosition(p);
+                Toast.makeText(getApplicationContext(), item.title + " selected", Toast.LENGTH_LONG).show();
             }
         });
         /*
