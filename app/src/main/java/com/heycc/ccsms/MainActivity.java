@@ -5,10 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.heycc.ccsms.model.MessageGroup;
 
 import java.util.ArrayList;
 
@@ -25,20 +24,26 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        convs = new ArrayList<>();
-        convs.add(new Conversation("Xi", "Love", "2015"));
-        convs.add(new Conversation("Amy", "Lovely", "2014"));
-
-
+        MessageGroup mg = new MessageGroup(this);
         mListView = (ListView) findViewById(R.id.list);
-        mListView.setAdapter(new ConversationAdapter(this, convs));
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> av, View v, int p, long id) {
-                Conversation item = (Conversation) av.getItemAtPosition(p);
-                Toast.makeText(getApplicationContext(), item.title + " selected", Toast.LENGTH_LONG).show();
-            }
-        });
+        mg.addAdapterTo(mListView);
+
+
+//        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
+//                null, null, null, null);
+
+        //Cursor cus = new MessageGroup(this).query();
+
+//        mListView = (ListView) findViewById(R.id.list);
+//        mListView.setAdapter(new SmsAdapter(this, cursor));
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> av, View v, int p, long id) {
+//                Cursor item = (Cursor) av.getItemAtPosition(p);
+//                Toast.makeText(getApplicationContext(),
+//                        item.getString(item.getColumnIndexOrThrow("body")), Toast.LENGTH_LONG).show();
+//            }
+//        });
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
