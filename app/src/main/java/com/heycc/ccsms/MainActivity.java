@@ -1,10 +1,15 @@
 package com.heycc.ccsms;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.heycc.ccsms.model.MessageGroup;
@@ -27,24 +32,13 @@ public class MainActivity extends AppCompatActivity {
         MessageGroup mg = new MessageGroup(this);
         mListView = (ListView) findViewById(R.id.list);
         mg.addAdapterTo(mListView);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(getApplicationContext(), EditGroupActivity.class));
+            }
+        });
 
-
-//        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
-//                null, null, null, null);
-
-        //Cursor cus = new MessageGroup(this).query();
-
-//        mListView = (ListView) findViewById(R.id.list);
-//        mListView.setAdapter(new SmsAdapter(this, cursor));
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> av, View v, int p, long id) {
-//                Cursor item = (Cursor) av.getItemAtPosition(p);
-//                Toast.makeText(getApplicationContext(),
-//                        item.getString(item.getColumnIndexOrThrow("body")), Toast.LENGTH_LONG).show();
-//            }
-//        });
-        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        */
+
     }
 
     @Override

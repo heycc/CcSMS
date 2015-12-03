@@ -33,6 +33,7 @@ public class MessageGroupAdapter extends CursorAdapter {
         TextView tvMsg = (TextView) view.findViewById(R.id.row_msg);
         TextView tvTime = (TextView) view.findViewById(R.id.row_time);
 
+
         tvTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_GROUP_NAME)));
         tvMsg.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_MSG)));
         tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_TIME))));
@@ -41,18 +42,33 @@ public class MessageGroupAdapter extends CursorAdapter {
     public String getNiceTime(long millis) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(millis);
+
         Calendar now = new GregorianCalendar();
-        now.setTimeInMillis(System.currentTimeMillis());
-        if (calendar.get(Calendar.YEAR) < now.get(Calendar.YEAR)) {
-            return "" + calendar.get(Calendar.YEAR);
+        long nowMillis = System.currentTimeMillis();
+        now.setTimeInMillis(nowMillis);
+
+        Calendar midNightCalendar = Calendar.getInstance();
+        midNightCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        midNightCalendar.set(Calendar.MINUTE, 0);
+        midNightCalendar.set(Calendar.SECOND, 0);
+        midNightCalendar.set(Calendar.MILLISECOND, 0);
+        long midNight = midNightCalendar.getTimeInMillis();
+        
+        if (millis >= nowMillis) {
+            // This shouldn't happen
+            return millis + "";
+        } else if (millis >= midNight) {
+            return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
+        } else if (millis >= midNight - 24 * 60 * 60 * 1000) {
+            return "昨天";
+        } else if (calendar.get(Calendar.YEAR) < now.get(Calendar.YEAR)) {
+            return calendar.get(Calendar.YEAR) + "";
         } else if (calendar.get(Calendar.MONTH) < now.get(Calendar.MONTH)) {
             return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA);
-        } else if (calendar.get(Calendar.DAY_OF_MONTH) <= now.get(Calendar.DAY_OF_MONTH) - 7) {
-            return calendar.getDisplayName(Calendar.DAY_OF_MONTH, Calendar.SHORT, Locale.CHINA);
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) < now.get(Calendar.DAY_OF_WEEK)) {
-            return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.CHINA);
+        } else if (calendar.get(Calendar.WEEK_OF_MONTH) < now.get(Calendar.WEEK_OF_MONTH)) {
+            return calendar.getDisplayName(Calendar.DAY_OF_MONTH, Calendar.SHORT, Locale.CHINA) + "日";
         } else {
-            return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
+            return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.CHINA);
         }
     }
 }

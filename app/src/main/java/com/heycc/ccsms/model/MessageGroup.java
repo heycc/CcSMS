@@ -23,16 +23,24 @@ public class MessageGroup {
         cv.put(MessageGroupEntity.COLUMN_GROUP_ID, 1);
         cv.put(MessageGroupEntity.COLUMN_GROUP_NAME, "Xi");
         cv.put(MessageGroupEntity.COLUMN_RECENT_MSG, "LoveのSeason");
-        cv.put(MessageGroupEntity.COLUMN_RECENT_TIME, System.currentTimeMillis() - 10000);
+        cv.put(MessageGroupEntity.COLUMN_RECENT_TIME, System.currentTimeMillis());
         db.insert(MessageGroupEntity.TABLE_NAME, null, cv);
 
         mga = new MessageGroupAdapter(context,
-                db.query(MessageGroupEntity.TABLE_NAME, null, null, null, null, null, null),
+                db.query(MessageGroupEntity.TABLE_NAME, null, null, null, null, null,
+                        MessageGroupEntity.COLUMN_RECENT_TIME + " desc"),
                 0);
     }
 
     public ListView addAdapterTo(ListView view) {
         view.setAdapter(mga);
+//        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                MessageGroupEntity messageGroupEntity = (MessageGroupEntity) parent.getItemAtPosition(position);
+//                startActivity(new Intent(this, EditGroupActivity.class));
+//            }
+//        });
         return view;
     }
 }
