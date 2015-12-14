@@ -1,4 +1,4 @@
-package com.heycc.ccsms;
+package com.heycc.ccsms.other;
 
 /**
  * Created by cc on 11/26/15.

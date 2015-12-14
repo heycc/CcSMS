@@ -1,4 +1,4 @@
-package com.heycc.ccsms;
+package com.heycc.ccsms.other;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+
+import com.heycc.ccsms.R;
 
 import java.util.Date;
 

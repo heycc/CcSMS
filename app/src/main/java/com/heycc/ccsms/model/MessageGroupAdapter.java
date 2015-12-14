@@ -33,7 +33,6 @@ public class MessageGroupAdapter extends CursorAdapter {
         TextView tvMsg = (TextView) view.findViewById(R.id.row_msg);
         TextView tvTime = (TextView) view.findViewById(R.id.row_time);
 
-
         tvTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_GROUP_NAME)));
         tvMsg.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_MSG)));
         tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_TIME))));
@@ -53,7 +52,7 @@ public class MessageGroupAdapter extends CursorAdapter {
         midNightCalendar.set(Calendar.SECOND, 0);
         midNightCalendar.set(Calendar.MILLISECOND, 0);
         long midNight = midNightCalendar.getTimeInMillis();
-        
+
         if (millis >= nowMillis) {
             // This shouldn't happen
             return millis + "";
@@ -61,14 +60,13 @@ public class MessageGroupAdapter extends CursorAdapter {
             return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
         } else if (millis >= midNight - 24 * 60 * 60 * 1000) {
             return "昨天";
+        } else if (millis >= midNight - 6 * 24 * 60 * 60 * 1000) {
+            return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.CHINA);
         } else if (calendar.get(Calendar.YEAR) < now.get(Calendar.YEAR)) {
             return calendar.get(Calendar.YEAR) + "";
-        } else if (calendar.get(Calendar.MONTH) < now.get(Calendar.MONTH)) {
-            return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA);
-        } else if (calendar.get(Calendar.WEEK_OF_MONTH) < now.get(Calendar.WEEK_OF_MONTH)) {
-            return calendar.getDisplayName(Calendar.DAY_OF_MONTH, Calendar.SHORT, Locale.CHINA) + "日";
         } else {
-            return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.CHINA);
+            return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA) +
+                    calendar.get(Calendar.DAY_OF_MONTH) + "日";
         }
     }
 }
