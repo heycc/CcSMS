@@ -9,13 +9,13 @@ import android.view.MenuItem;
 
 import com.heycc.ccsms.R;
 
-public class EditGroupActivity extends AppCompatActivity {
+public class EditTopicActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_group);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit_group);
+        setContentView(R.layout.activity_edit_topic);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit_topic);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

@@ -17,8 +17,8 @@ import java.util.Locale;
 /**
  * Created by cc on 12/1/15.
  */
-public class MessageGroupAdapter extends CursorAdapter {
-    public MessageGroupAdapter(Context context, Cursor cursor, int flags) {
+public class TopicAdapter extends CursorAdapter {
+    public TopicAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
 
@@ -33,9 +33,9 @@ public class MessageGroupAdapter extends CursorAdapter {
         TextView tvMsg = (TextView) view.findViewById(R.id.row_msg);
         TextView tvTime = (TextView) view.findViewById(R.id.row_time);
 
-        tvTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_GROUP_NAME)));
-        tvMsg.setText(cursor.getString(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_MSG)));
-        tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(MessageGroupEntity.COLUMN_RECENT_TIME))));
+        tvTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_NAME)));
+        tvMsg.setText(cursor.getString(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_RECENT_MSG)));
+        tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_RECENT_TIME))));
     }
 
     public String getNiceTime(long millis) {

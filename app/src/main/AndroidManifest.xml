@@ -21,16 +21,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".model.EditGroupActivity"
+            android:name=".model.EditTopicActivity"
             android:label="@string/title_activity_edit_group"
-            android:parentActivityName=".model.ViewGroupActivity"
+            android:parentActivityName=".model.ViewTopicActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".model.ViewGroupActivity" />
+                android:value=".model.ViewTopicActivity" />
         </activity>
         <activity
-            android:name=".model.ViewGroupActivity"
+            android:name=".model.ViewTopicActivity"
             android:label="@string/title_activity_view_group"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

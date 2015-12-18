@@ -10,13 +10,13 @@ import android.view.MenuItem;
 
 import com.heycc.ccsms.R;
 
-public class ViewGroupActivity extends AppCompatActivity {
+public class ViewTopicActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_group);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_view_topic);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_view_topic);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -27,7 +27,7 @@ public class ViewGroupActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_view_group, menu);
+        getMenuInflater().inflate(R.menu.menu_view_topic, menu);
         return true;
     }
 
@@ -35,7 +35,7 @@ public class ViewGroupActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_view_group:
-                startActivity(new Intent(this, EditGroupActivity.class));
+                startActivity(new Intent(this, EditTopicActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
