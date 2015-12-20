@@ -24,7 +24,7 @@ public class Topic {
 
     public Topic(Context context) {
         this.context = context;
-        TopicHelper helper = new TopicHelper(context);
+        DBHelper helper = new DBHelper(context);
         dbWrite = helper.getReadableDatabase();
         dbRead = helper.getReadableDatabase();
 
@@ -58,7 +58,10 @@ public class Topic {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                context.startActivity(new Intent(context, ViewTopicActivity.class));
+                Intent intent = new Intent(context, ViewTopicActivity.class);
+                intent.putExtra(TopicEntity.COLUMN_NAME, cursor.getString(cursor.getColumnIndex(TopicEntity.COLUMN_NAME)));
+                intent.putExtra(TopicEntity._ID, cursor.getString(cursor.getColumnIndex(TopicEntity._ID)));
+                context.startActivity(intent);
             }
         });
     }
@@ -71,26 +74,49 @@ public class Topic {
         while (cursor.moveToNext()) {
             boolean matched = false;
             for (TopicHolder tp : currentTopics) {
+                // The new message match some topic, update recent_time and recent_msg if necessary
                 if (tp.matchMessage(cursor.getString(cursor.getColumnIndex("address")),
                         cursor.getString(cursor.getColumnIndex("body")))) {
                     if (tp.recent_time < cursor.getLong(cursor.getColumnIndex("date"))) {
                         tp.recent_time = cursor.getLong(cursor.getColumnIndex("date"));
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
                     }
-                    // TODO: add to topic detail
+                    // Add to topicMessage
+                    addTopicMessage(tp._id,
+                            cursor.getLong(cursor.getColumnIndex("_ID")),
+                            cursor.getLong(cursor.getColumnIndex("date")),
+                            "inbox");
                     matched = true;
                 }
             }
+            // The new message match none, create a topic, and insert into db to get the id
             if (!matched) {
-                currentTopics.add(new TopicHolder(TopicEntity.DEFAULT_ID,
+                ContentValues cv = new ContentValues();
+                cv.put(TopicEntity.COLUMN_NAME, cursor.getString(cursor.getColumnIndex("address")));
+                cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
+                cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
+                long theId = dbWrite.insert(TopicEntity.TABLE_NAME, null, cv);
+
+                currentTopics.add(new TopicHolder(theId,
                         cursor.getString(cursor.getColumnIndex("body")),
                         cursor.getLong(cursor.getColumnIndex("date")),
                         TopicEntity.CONDITION_ADDRESS + TopicEntity.CONDITION_VALUE_SEP +
                                 cursor.getString(cursor.getColumnIndex("address"))));
-                // TODO add to topic detail
+
+                addTopicMessage(theId,
+                        cursor.getLong(cursor.getColumnIndex("_ID")),
+                        cursor.getLong(cursor.getColumnIndex("date")),
+                        "inbox");
             }
         }
 
+        writeBackTopic();
+
+        mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
+                TopicEntity.COLUMN_RECENT_TIME + " desc"));
+    }
+
+    private void writeBackTopic() {
         // Write back to topic db and reload list adapter
         for (TopicHolder tp : currentTopics) {
             ContentValues cv = new ContentValues();
@@ -124,19 +150,25 @@ public class Topic {
                         new String[]{tp._id + ""});
             }
         }
+    }
 
-        mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
-                TopicEntity.COLUMN_NAME + " desc"));
+    private void addTopicMessage(long id, long smsId, long time, String box) {
+        ContentValues cv = new ContentValues();
+        cv.put(TopicMessageEntity.COLUMN_TOPIC_ID, id);
+        cv.put(TopicMessageEntity.COLUMN_SMS_ID, smsId);
+        cv.put(TopicMessageEntity.COLUMN_TIME, time);
+        cv.put(TopicMessageEntity.COLUMN_BOX, box);
+        dbWrite.insert(TopicMessageEntity.TABLE_NAME, null, cv);
     }
 
     private class TopicHolder extends TopicEntity {
-        int _id;
+        long _id;
         String recent_msg;
         long recent_time;
         List<String> addressList = new ArrayList<>();
         List<String> keywordList = new ArrayList<>();
 
-        public TopicHolder(int id, String body, long time, String condition) {
+        public TopicHolder(long id, String body, long time, String condition) {
             this._id = id;
             this.recent_msg = body;
             this.recent_time = time;
