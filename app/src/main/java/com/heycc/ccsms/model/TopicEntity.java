@@ -12,7 +12,15 @@ abstract class TopicEntity implements BaseColumns {
     public static final String COLUMN_RECENT_MSG = "recent_msg";
     public static final String COLUMN_RECENT_TIME = "recent_time";
     public static final String COLUMN_RINGTONE_URI = "ringtone_uri";
+    // condition e.g. address\t111\t222\nkeyword\tabc\tfef
     public static final String COLUMN_CONDITION = "condition";
+    public static final String COLUMN_HIDDEN = "hidden";
+
+    public static final String CONDITION_ADDRESS = "address";
+    public static final String CONDITION_KEYWORD = "keyword";
+    public static final String CONDITION_LINE_SEP = "\n";
+    public static final String CONDITION_VALUE_SEP = "\t";
+    public static final int DEFAULT_ID = -1;
 
     static String getCreateSQL() {
         String sql = "";
@@ -24,6 +32,7 @@ abstract class TopicEntity implements BaseColumns {
                 TopicEntity.COLUMN_RECENT_TIME + " INTEGER," +
                 TopicEntity.COLUMN_RINGTONE_URI + " TEXT," +
                 TopicEntity.COLUMN_CONDITION + " TEXT" +
+                TopicEntity.COLUMN_HIDDEN + " TEXT" +
                 ")";
         return sql;
     }
@@ -31,6 +40,4 @@ abstract class TopicEntity implements BaseColumns {
     static String getDropSQL() {
         return "DROP TABLE IF EXISTS " + TopicEntity.TABLE_NAME;
     }
-
-    abstract boolean matchMessage(String address, String body);
 }
