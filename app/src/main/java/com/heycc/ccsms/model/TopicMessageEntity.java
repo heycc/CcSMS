@@ -16,10 +16,10 @@ abstract class TopicMessageEntity implements BaseColumns {
         String sql = "";
         sql += "CREATE TABLE " + TopicMessageEntity.TABLE_NAME + "(" +
                 TopicMessageEntity._ID + " INTEGER PRIMARY KEY," +
-                TopicMessageEntity.COLUMN_TOPIC_ID + " " +
+                TopicMessageEntity.COLUMN_TOPIC_ID + " INTEGER," +
                 TopicMessageEntity.COLUMN_SMS_ID + " INTEGER," +
-                TopicMessageEntity.COLUMN_BOX + " TEXT," +
                 TopicMessageEntity.COLUMN_TIME + " INTEGER," +
+                TopicMessageEntity.COLUMN_BOX + " TEXT" +
                 ")";
         return sql;
     }

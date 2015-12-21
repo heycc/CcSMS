@@ -172,8 +172,8 @@ public class Topic {
             this._id = id;
             this.recent_msg = body;
             this.recent_time = time;
-            for (String ling : condition.split(TopicEntity.CONDITION_LINE_SEP)) {
-                String[] values = ling.split(TopicEntity.CONDITION_VALUE_SEP);
+            for (String line : condition.split(TopicEntity.CONDITION_LINE_SEP)) {
+                String[] values = line.split(TopicEntity.CONDITION_VALUE_SEP);
                 switch (values[0]) {
                     case TopicEntity.CONDITION_ADDRESS:
                         for (int i = 1; i < values.length; i++) {

@@ -33,7 +33,8 @@
             android:name=".model.ViewTopicActivity"
             android:label="@string/title_activity_view_group"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustPan">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.heycc.ccsms.MainActivity" />

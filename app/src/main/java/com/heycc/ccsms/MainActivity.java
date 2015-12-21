@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity
                 return new CursorLoader(this,
                         Uri.parse("content://sms/inbox"),
                         null,
-                        "read=?",
-                        new String[]{isRead},
+                        "read=0",
+                        null, //new String[]{isRead},
                         "date desc");
             default:
                 return null;
