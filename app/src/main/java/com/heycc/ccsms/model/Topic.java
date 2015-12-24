@@ -32,7 +32,6 @@ public class Topic {
         Cursor currentCursor = dbWrite.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
                 TopicEntity.COLUMN_RECENT_TIME + " desc");
         if (currentCursor.getCount() > 0) {
-            currentCursor.moveToFirst();
             while (currentCursor.moveToNext()) {
                 currentTopics.add(new TopicHolder(currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity._ID)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_MSG)),
@@ -70,7 +69,7 @@ public class Topic {
         if (cursor.getCount() == 0) {
             return;
         }
-        cursor.moveToFirst();
+
         while (cursor.moveToNext()) {
             boolean matched = false;
             for (TopicHolder tp : currentTopics) {
