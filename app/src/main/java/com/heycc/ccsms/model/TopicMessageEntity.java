@@ -27,4 +27,8 @@ abstract class TopicMessageEntity implements BaseColumns {
     static String getDropSQL() {
         return "DROP TABLE IF EXISTS " + TopicMessageEntity.TABLE_NAME;
     }
+
+    static String getNiceTime(long millis) {
+        return TopicEntity.getNiceTime(millis);
+    }
 }

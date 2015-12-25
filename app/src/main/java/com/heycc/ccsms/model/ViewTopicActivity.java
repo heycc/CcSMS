@@ -10,9 +10,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.heycc.ccsms.R;
@@ -29,7 +29,6 @@ public class ViewTopicActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         String topicTitle = intent.getStringExtra(TopicEntity.COLUMN_NAME);
-//        Log.w("VIEWTOPIC",""+intent.getStringExtra(TopicEntity._ID));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -44,9 +43,8 @@ public class ViewTopicActivity extends AppCompatActivity
                 new String[]{"" + intent.getStringExtra(TopicEntity._ID)},
                 null,
                 null,
-                null,
-                "10");
-        Log.w("DEBUG", "TopicId: " + intent.getStringExtra(TopicEntity._ID) + " CNT: " + cursor.getCount());
+                TopicMessageEntity.COLUMN_TIME + " desc",
+                null);
         if (cursor.getCount() == 0) {
             cursor.close();
             db.close();
@@ -63,13 +61,23 @@ public class ViewTopicActivity extends AppCompatActivity
                 null,
                 "_ID in (" + makePlaceholders(smsIds.length) + ")",
                 smsIds,
-                "date desc");
-        StringBuilder sb = new StringBuilder();
+                "date asc");
+
+        TextView textView = (TextView) findViewById(R.id.message_view);
         while (smsCursor.moveToNext()) {
-            sb.append(smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
+            textView.append(TopicMessageEntity.getNiceTime(smsCursor.getLong(smsCursor.getColumnIndex("date")))
+                    + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
         }
-        ((TextView) findViewById(R.id.message_view)).setText(sb);
         smsCursor.close();
+
+        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
+        scrollview.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+
     }
 
     private String makePlaceholders(int len) {

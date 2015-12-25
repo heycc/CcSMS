@@ -2,6 +2,10 @@ package com.heycc.ccsms.model;
 
 import android.provider.BaseColumns;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 /**
  * Created by cc on 12/2/15.
  */
@@ -39,5 +43,39 @@ abstract class TopicEntity implements BaseColumns {
 
     static String getDropSQL() {
         return "DROP TABLE IF EXISTS " + TopicEntity.TABLE_NAME;
+    }
+
+    static String getNiceTime(long millis) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(millis);
+
+        Calendar now = new GregorianCalendar();
+        long nowMillis = System.currentTimeMillis();
+        now.setTimeInMillis(nowMillis);
+
+        Calendar midNightCalendar = Calendar.getInstance();
+        midNightCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        midNightCalendar.set(Calendar.MINUTE, 0);
+        midNightCalendar.set(Calendar.SECOND, 0);
+        midNightCalendar.set(Calendar.MILLISECOND, 0);
+        long midNight = midNightCalendar.getTimeInMillis();
+
+        if (millis >= nowMillis) {
+            // This shouldn't happen
+            return millis + "";
+        } else if (millis >= midNight) {
+            return String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))
+                    + ":"
+                    + String.format("%02d", calendar.get(Calendar.MINUTE));
+        } else if (millis >= midNight - 24 * 60 * 60 * 1000) {
+            return "昨天";
+        } else if (millis >= midNight - 6 * 24 * 60 * 60 * 1000) {
+            return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.CHINA);
+        } else if (calendar.get(Calendar.YEAR) < now.get(Calendar.YEAR)) {
+            return calendar.get(Calendar.YEAR) + "";
+        } else {
+            return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA) +
+                    calendar.get(Calendar.DAY_OF_MONTH) + "日";
+        }
     }
 }
