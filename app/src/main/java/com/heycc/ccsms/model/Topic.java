@@ -10,8 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by cc on 12/2/15.
@@ -30,28 +28,47 @@ public class Topic {
         dbRead = helper.getReadableDatabase();
 
         // Load topics into memory
+        loadTopic();
+
+        mga = new TopicAdapter(context,
+                dbRead.query(TopicEntity.TABLE_NAME,
+                        null, null, null, null, null,
+                        TopicEntity.COLUMN_RECENT_TIME + " desc"),
+                0);
+    }
+
+    /**
+     * loadTopic
+     * load topics into memory
+     */
+    private void loadTopic() {
         Cursor currentCursor = dbWrite.query(TopicEntity.TABLE_NAME, null, null, null, null, null, null);
         if (currentCursor.getCount() > 0) {
             while (currentCursor.moveToNext()) {
-                currentTopics.add(new TopicHolder(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity._ID)),
-                        currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_NAME)).trim(),
+                this.currentTopics.add(new TopicHolder(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity._ID)),
+                        currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_NAME)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_MSG)),
                         currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION))));
             }
         }
         currentCursor.close();
-
-        mga = new TopicAdapter(context,
-                dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
-                        TopicEntity.COLUMN_RECENT_TIME + " desc"),
-                0);
     }
 
+    /**
+     * getCount
+     *
+     * @return current topic count
+     */
     public int getCount() {
-        return currentTopics.size();
+        return this.currentTopics.size();
     }
 
+    /**
+     * add adapter to the ListView
+     *
+     * @param view
+     */
     public void addAdapterTo(ListView view) {
         view.setAdapter(mga);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,7 +83,12 @@ public class Topic {
         });
     }
 
-    public void addMessage(Cursor cursor) {
+    /**
+     * load message from cursor
+     *
+     * @param cursor
+     */
+    public void loadMessage(Cursor cursor) {
         if (cursor.getCount() == 0) {
             return;
         }
@@ -91,8 +113,12 @@ public class Topic {
             }
             // The new message match none, create a topic, and insert into db to get the id
             if (!matched) {
+                String title = TopicEntity.getSmartTitle(cursor.getString(cursor.getColumnIndex("body")));
+                title = (title == null) ? cursor.getString(cursor.getColumnIndex("address")) : title;
+
+                // For new topic, insert into db to get it's _ID value
                 ContentValues cv = new ContentValues();
-                cv.put(TopicEntity.COLUMN_NAME, cursor.getString(cursor.getColumnIndex("address")));
+                cv.put(TopicEntity.COLUMN_NAME, title);
                 cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
                 cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
                 long theId = dbWrite.insert(TopicEntity.TABLE_NAME, null, cv);
@@ -118,13 +144,12 @@ public class Topic {
     }
 
     private void writeBackTopic() {
-        // Write back to topic db and reload list adapter
+        // Write back to topic db
         for (TopicHolder tp : currentTopics) {
             ContentValues cv = new ContentValues();
             cv.put(TopicEntity.COLUMN_NAME, tp.title);
             cv.put(TopicEntity.COLUMN_RECENT_TIME, tp.recent_time);
             cv.put(TopicEntity.COLUMN_RECENT_MSG, tp.recent_msg);
-
             // generate condition string
             String condition = "";
             String tmp = "";
@@ -171,6 +196,9 @@ public class Topic {
         dbWrite.insert(TopicMessageEntity.TABLE_NAME, null, cv);
     }
 
+    /**
+     * Inner class, for holding a topic
+     */
     private class TopicHolder extends TopicEntity {
         long _id;
         String title;
@@ -202,14 +230,16 @@ public class Topic {
                 }
             }
 
-            if (title == null) {
-                String tmp = getSmartTitle(body);
+            if (title == null || title.trim().length() == 0) {
+                String tmp = TopicEntity.getSmartTitle(body);
                 if (tmp != null) {
                     this.title = tmp;
                     this.keywordList.add(tmp);
                 } else {
                     this.title = this.addressList.get(0);
                 }
+            } else {
+                this.title = title;
             }
         }
 
@@ -225,18 +255,6 @@ public class Topic {
                 }
             }
             return false;
-        }
-
-        private String getSmartTitle(String body) {
-            String[] regs = new String[]{"【(.*)】", "\\[(.*)\\]"};
-            for (String reg : regs) {
-                Pattern pattern = Pattern.compile(reg);
-                Matcher matcher = pattern.matcher(body);
-                if (matcher.find()) {
-                    return matcher.group(1);
-                }
-            }
-            return null;
         }
     }
 }

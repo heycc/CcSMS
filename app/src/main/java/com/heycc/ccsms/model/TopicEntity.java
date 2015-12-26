@@ -5,6 +5,8 @@ import android.provider.BaseColumns;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by cc on 12/2/15.
@@ -77,5 +79,22 @@ abstract class TopicEntity implements BaseColumns {
             return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA) +
                     calendar.get(Calendar.DAY_OF_MONTH) + "日";
         }
+    }
+
+    static String getSmartTitle(String body) {
+        String[] regs = new String[]{"^【(.*)】",
+                "【(.*)】$",
+                "^\\[(.*)\\]",
+                "\\[(.*)\\]$",
+                "【(.*)】",
+                "\\[(.*)\\]"};
+        for (String reg : regs) {
+            Pattern pattern = Pattern.compile(reg);
+            Matcher matcher = pattern.matcher(body);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return null;
     }
 }

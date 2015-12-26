@@ -19,6 +19,8 @@ import com.heycc.ccsms.R;
 
 public class ViewTopicActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int onceLoadLimit = 50;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,23 +38,37 @@ public class ViewTopicActivity extends AppCompatActivity
             actionBar.setTitle(topicTitle);
         }
 
-        SQLiteDatabase db = new DBHelper(this).getReadableDatabase();
+        db = new DBHelper(this).getReadableDatabase();
+
+        this.loadMessage(intent.getStringExtra(TopicEntity._ID));
+
+        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
+        scrollview.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+
+    }
+
+    private void loadMessage(String topicId) {
         Cursor cursor = db.query(TopicMessageEntity.TABLE_NAME,
                 null,
                 TopicMessageEntity.COLUMN_TOPIC_ID + "=?",
-                new String[]{"" + intent.getStringExtra(TopicEntity._ID)},
+                new String[]{"" + topicId},
                 null,
                 null,
                 TopicMessageEntity.COLUMN_TIME + " desc",
-                null);
+                onceLoadLimit + "");
         if (cursor.getCount() == 0) {
             cursor.close();
             db.close();
             return;
         }
 
-        String[] smsIds = new String[cursor.getCount()];
-        for (int i = 0; cursor.moveToNext(); i++) {
+        String[] smsIds = new String[min(cursor.getCount(), onceLoadLimit)];
+        for (int i = 0; i < smsIds.length && cursor.moveToNext(); i++) {
             smsIds[i] = cursor.getString(cursor.getColumnIndex(TopicMessageEntity.COLUMN_SMS_ID));
         }
         cursor.close();
@@ -69,15 +85,6 @@ public class ViewTopicActivity extends AppCompatActivity
                     + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
         }
         smsCursor.close();
-
-        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
-        scrollview.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-        });
-
     }
 
     private String makePlaceholders(int len) {
@@ -92,6 +99,10 @@ public class ViewTopicActivity extends AppCompatActivity
             }
             return sb.toString();
         }
+    }
+
+    private int min(int a, int b) {
+        return a > b ? b : a;
     }
 
     @Override
@@ -115,7 +126,6 @@ public class ViewTopicActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getIntent();
         String topicId = intent.getStringExtra(TopicEntity._ID);
-//        return new CursorLoader
         return null;
     }
 

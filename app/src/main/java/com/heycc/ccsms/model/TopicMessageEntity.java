@@ -2,6 +2,10 @@ package com.heycc.ccsms.model;
 
 import android.provider.BaseColumns;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 /**
  * Created by cc on 12/21/15.
  */
@@ -29,6 +33,12 @@ abstract class TopicMessageEntity implements BaseColumns {
     }
 
     static String getNiceTime(long millis) {
-        return TopicEntity.getNiceTime(millis);
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(millis);
+        return calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.CHINA)
+                + calendar.get(Calendar.DAY_OF_MONTH) + "日"
+                + String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))
+                + ":"
+                + String.format("%02d", calendar.get(Calendar.MINUTE));
     }
 }

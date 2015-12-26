@@ -49,12 +49,11 @@ public class MainActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SMS_LOADER:
-                String isRead = (topic.getCount() > 0) ? "0" : "1";
                 return new CursorLoader(this,
                         Uri.parse("content://sms/inbox"),
                         null,
-                        "read=0",
-                        null, //new String[]{isRead},
+                        "read=" + ((topic.getCount() > 0) ? "1" : "0"),
+                        null,
                         "date desc");
             default:
                 return null;
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        topic.addMessage(cursor);
+        topic.loadMessage(cursor);
     }
 
     @Override
