@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -105,6 +106,7 @@ public class Topic {
      * @param cursor
      */
     public void loadMessage(Cursor cursor) {
+        Log.d("loadMessage", cursor.getCount() + "");
         if (cursor.getCount() == 0) {
             return;
         }
@@ -141,6 +143,8 @@ public class Topic {
                 cv.put(TopicEntity.COLUMN_NAME, title);
                 cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
                 cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
+                cv.put(TopicEntity.COLUMN_HIDDEN, "0");
+                cv.put(TopicEntity.COLUMN_UNREAD, "1");
                 long theId = dbWrite.insert(TopicEntity.TABLE_NAME, null, cv);
 
                 currentTopics.add(new TopicHolder(theId,
@@ -172,6 +176,7 @@ public class Topic {
             cv.put(TopicEntity.COLUMN_RECENT_TIME, tp.recent_time);
             cv.put(TopicEntity.COLUMN_RECENT_MSG, tp.recent_msg);
             cv.put(TopicEntity.COLUMN_UNREAD, tp.unread);
+            cv.put(TopicEntity.COLUMN_HIDDEN, tp.hidden);
             // generate condition string
             String condition = "";
             String tmp = "";
@@ -226,7 +231,7 @@ public class Topic {
         String title;
         String recent_msg;
         long recent_time;
-        boolean hidden = false;
+        int hidden = 0;
         int unread = 0;
         ArrayList<String> addressList = new ArrayList<>();
         ArrayList<String> keywordList = new ArrayList<>();
