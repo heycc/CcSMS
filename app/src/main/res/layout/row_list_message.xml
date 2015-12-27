@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/msg_row_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/time_text_height"
+        android:layout_centerHorizontal="true"
+        android:text="--message time--" />
+
+    <ImageView
+        android:id="@+id/msg_icon_peer"
+        android:layout_width="@dimen/icon_length"
+        android:layout_height="@dimen/icon_length"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/msg_row_time_text"
+        android:layout_marginLeft="@dimen/icon_margin_left"
+        android:layout_marginRight="@dimen/icon_margin_right"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/msg_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/msg_row_time_text"
+        android:layout_toRightOf="@+id/msg_icon_peer"
+        android:background="#f8f6f1"
+        android:text="the message aaaaa aaaaa aaaaa aaaaaaa\nlong text\n\n\nfeaf"
+        android:textSize="@dimen/msg_text_size" />
+</RelativeLayout>

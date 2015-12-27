@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/row_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/icon_length"
+        android:layout_height="@dimen/icon_length"
         android:layout_marginBottom="6dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
