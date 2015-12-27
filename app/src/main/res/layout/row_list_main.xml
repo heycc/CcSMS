@@ -34,19 +34,30 @@
         android:layout_alignBottom="@+id/row_icon"
         android:layout_below="@+id/row_title"
         android:layout_marginBottom="3dp"
-        android:layout_toLeftOf="@+id/row_time"
+        android:layout_toLeftOf="@+id/row_unread"
         android:layout_toRightOf="@+id/row_icon"
         android:text="Last msg"
         android:textSize="13sp" />
 
     <TextView
         android:id="@+id/row_time"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignBottom="@+id/row_icon"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/row_icon"
         android:layout_alignWithParentIfMissing="false"
         android:gravity="center_vertical"
-        android:text="Time" />
+        android:paddingRight="8dp"
+        android:text="Time"
+        android:textAlignment="viewEnd" />
+
+    <TextView
+        android:id="@+id/row_unread"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/row_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_alignRight="@+id/row_time"
+        android:layout_below="@+id/row_time"
+        android:textAlignment="center" />
 </RelativeLayout>

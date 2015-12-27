@@ -21,6 +21,7 @@ abstract class TopicEntity implements BaseColumns {
     // condition e.g. address\t111\t222\nkeyword\tabc\tfef
     public static final String COLUMN_CONDITION = "condition";
     public static final String COLUMN_HIDDEN = "hidden";
+    public static final String COLUMN_UNREAD = "have_unread";
 
     public static final String CONDITION_ADDRESS = "address";
     public static final String CONDITION_KEYWORD = "keyword";
@@ -37,8 +38,9 @@ abstract class TopicEntity implements BaseColumns {
                 TopicEntity.COLUMN_RECENT_MSG + " TEXT," +
                 TopicEntity.COLUMN_RECENT_TIME + " INTEGER," +
                 TopicEntity.COLUMN_RINGTONE_URI + " TEXT," +
-                TopicEntity.COLUMN_CONDITION + " TEXT" +
-                TopicEntity.COLUMN_HIDDEN + " TEXT" +
+                TopicEntity.COLUMN_CONDITION + " TEXT," +
+                TopicEntity.COLUMN_HIDDEN + " TEXT," +
+                TopicEntity.COLUMN_UNREAD + " INTEGER" +
                 ")";
         return sql;
     }

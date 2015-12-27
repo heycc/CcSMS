@@ -28,10 +28,12 @@ public class TopicAdapter extends CursorAdapter {
         TextView tvTitle = (TextView) view.findViewById(R.id.row_title);
         TextView tvMsg = (TextView) view.findViewById(R.id.row_msg);
         TextView tvTime = (TextView) view.findViewById(R.id.row_time);
+        TextView tvUnread = (TextView) view.findViewById(R.id.row_unread);
 
         tvTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_NAME)));
         tvMsg.setText(cursor.getString(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_RECENT_MSG)));
         tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_RECENT_TIME))));
+        tvUnread.setText(cursor.getString(cursor.getColumnIndex(TopicEntity.COLUMN_UNREAD)));
     }
 
     public String getNiceTime(long millis) {

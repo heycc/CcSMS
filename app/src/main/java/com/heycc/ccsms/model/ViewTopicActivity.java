@@ -1,6 +1,7 @@
 package com.heycc.ccsms.model;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ public class ViewTopicActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int onceLoadLimit = 50;
     SQLiteDatabase db;
+    int topicId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class ViewTopicActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         String topicTitle = intent.getStringExtra(TopicEntity.COLUMN_NAME);
+        topicId = Integer.parseInt(intent.getStringExtra(TopicEntity._ID));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -40,7 +43,7 @@ public class ViewTopicActivity extends AppCompatActivity
 
         db = new DBHelper(this).getReadableDatabase();
 
-        this.loadMessage(intent.getStringExtra(TopicEntity._ID));
+        this.loadMessage(topicId);
 
         final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
         scrollview.post(new Runnable() {
@@ -50,9 +53,10 @@ public class ViewTopicActivity extends AppCompatActivity
             }
         });
 
+        this.markRead();
     }
 
-    private void loadMessage(String topicId) {
+    private void loadMessage(int topicId) {
         Cursor cursor = db.query(TopicMessageEntity.TABLE_NAME,
                 null,
                 TopicMessageEntity.COLUMN_TOPIC_ID + "=?",
@@ -85,6 +89,15 @@ public class ViewTopicActivity extends AppCompatActivity
                     + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
         }
         smsCursor.close();
+    }
+
+    private void markRead() {
+        ContentValues cv = new ContentValues();
+        cv.put(TopicEntity.COLUMN_UNREAD, "0");
+        db.update(TopicEntity.TABLE_NAME,
+                cv,
+                TopicEntity._ID + "=?",
+                new String[]{"" + topicId});
     }
 
     private String makePlaceholders(int len) {

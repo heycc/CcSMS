@@ -20,6 +20,7 @@ public class Topic {
     private SQLiteDatabase dbWrite;
     private TopicAdapter mga;
     private ArrayList<TopicHolder> currentTopics = new ArrayList<TopicHolder>();
+    private long lastest = 0;
 
     public Topic(Context context) {
         this.context = context;
@@ -32,7 +33,11 @@ public class Topic {
 
         mga = new TopicAdapter(context,
                 dbRead.query(TopicEntity.TABLE_NAME,
-                        null, null, null, null, null,
+                        null,
+                        TopicEntity.COLUMN_HIDDEN + " = ?",
+                        new String[]{"0"},
+                        null,
+                        null,
                         TopicEntity.COLUMN_RECENT_TIME + " desc"),
                 0);
     }
@@ -42,14 +47,17 @@ public class Topic {
      * load topics into memory
      */
     private void loadTopic() {
-        Cursor currentCursor = dbWrite.query(TopicEntity.TABLE_NAME, null, null, null, null, null, null);
+        Cursor currentCursor = dbWrite.query(TopicEntity.TABLE_NAME,
+                null, null, null, null, null, null);
         if (currentCursor.getCount() > 0) {
             while (currentCursor.moveToNext()) {
                 this.currentTopics.add(new TopicHolder(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity._ID)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_NAME)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_MSG)),
                         currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)),
-                        currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION))));
+                        currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)),
+                        currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD))));
+                lastest = max(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)), lastest);
             }
         }
         currentCursor.close();
@@ -62,6 +70,14 @@ public class Topic {
      */
     public int getCount() {
         return this.currentTopics.size();
+    }
+
+    public long getLastest() {
+        return lastest;
+    }
+
+    private long max(long a, long b) {
+        return a < b ? b : a;
     }
 
     /**
@@ -95,6 +111,7 @@ public class Topic {
 
         while (cursor.moveToNext()) {
             boolean matched = false;
+            int unread = 0;
             for (TopicHolder tp : currentTopics) {
                 // The new message match some topic, update recent_time and recent_msg if necessary
                 if (tp.matchMessage(cursor.getString(cursor.getColumnIndex("address")),
@@ -102,6 +119,9 @@ public class Topic {
                     if (tp.recent_time < cursor.getLong(cursor.getColumnIndex("date"))) {
                         tp.recent_time = cursor.getLong(cursor.getColumnIndex("date"));
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
+                    }
+                    if (cursor.getInt(cursor.getColumnIndex("read")) == 0) {
+                        tp.increaseUnread();
                     }
                     // Add to topicMessage
                     addTopicMessage(tp._id,
@@ -128,7 +148,8 @@ public class Topic {
                         cursor.getString(cursor.getColumnIndex("body")),
                         cursor.getLong(cursor.getColumnIndex("date")),
                         TopicEntity.CONDITION_ADDRESS + TopicEntity.CONDITION_VALUE_SEP +
-                                cursor.getString(cursor.getColumnIndex("address"))));
+                                cursor.getString(cursor.getColumnIndex("address")),
+                        1));
 
                 addTopicMessage(theId,
                         cursor.getLong(cursor.getColumnIndex("_ID")),
@@ -150,6 +171,7 @@ public class Topic {
             cv.put(TopicEntity.COLUMN_NAME, tp.title);
             cv.put(TopicEntity.COLUMN_RECENT_TIME, tp.recent_time);
             cv.put(TopicEntity.COLUMN_RECENT_MSG, tp.recent_msg);
+            cv.put(TopicEntity.COLUMN_UNREAD, tp.unread);
             // generate condition string
             String condition = "";
             String tmp = "";
@@ -204,13 +226,16 @@ public class Topic {
         String title;
         String recent_msg;
         long recent_time;
+        boolean hidden = false;
+        int unread = 0;
         ArrayList<String> addressList = new ArrayList<>();
         ArrayList<String> keywordList = new ArrayList<>();
 
-        public TopicHolder(long id, String title, String body, long time, String condition) {
+        public TopicHolder(long id, String title, String body, long time, String condition, int unread) {
             this._id = id;
             this.recent_msg = body;
             this.recent_time = time;
+            this.unread = unread;
 
             for (String line : condition.split(TopicEntity.CONDITION_LINE_SEP)) {
                 String[] values = line.split(TopicEntity.CONDITION_VALUE_SEP);
@@ -243,6 +268,9 @@ public class Topic {
             }
         }
 
+        public void increaseUnread() {
+            this.unread += 1;
+        }
         public boolean matchMessage(String address, String body) {
             for (String addr : this.addressList) {
                 if (addr.equals(address)) {
