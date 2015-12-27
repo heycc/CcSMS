@@ -1,7 +1,6 @@
 package com.heycc.ccsms.model;
 
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -52,8 +51,6 @@ public class ViewTopicActivity extends AppCompatActivity
                 scrollview.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
-
-        this.markRead();
     }
 
     private void loadMessage(int topicId) {
@@ -89,15 +86,6 @@ public class ViewTopicActivity extends AppCompatActivity
                     + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
         }
         smsCursor.close();
-    }
-
-    private void markRead() {
-        ContentValues cv = new ContentValues();
-        cv.put(TopicEntity.COLUMN_UNREAD, "0");
-        db.update(TopicEntity.TABLE_NAME,
-                cv,
-                TopicEntity._ID + "=?",
-                new String[]{"" + topicId});
     }
 
     private String makePlaceholders(int len) {

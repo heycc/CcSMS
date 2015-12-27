@@ -95,6 +95,7 @@ public class Topic {
                 Intent intent = new Intent(context, ViewTopicActivity.class);
                 intent.putExtra(TopicEntity.COLUMN_NAME, cursor.getString(cursor.getColumnIndex(TopicEntity.COLUMN_NAME)));
                 intent.putExtra(TopicEntity._ID, cursor.getString(cursor.getColumnIndex(TopicEntity._ID)));
+                markRead(cursor.getInt(cursor.getColumnIndex(TopicEntity._ID)));
                 context.startActivity(intent);
             }
         });
@@ -163,13 +164,12 @@ public class Topic {
         }
 
         writeBackTopic();
-
-        mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
-                TopicEntity.COLUMN_RECENT_TIME + " desc"));
     }
 
+    /**
+     * write back to db, and reload cursor
+     */
     private void writeBackTopic() {
-        // Write back to topic db
         for (TopicHolder tp : currentTopics) {
             ContentValues cv = new ContentValues();
             cv.put(TopicEntity.COLUMN_NAME, tp.title);
@@ -199,8 +199,20 @@ public class Topic {
                     TopicEntity._ID + "=?",
                     new String[]{tp._id + ""});
         }
+
+        mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
+                TopicEntity.COLUMN_RECENT_TIME + " desc"));
     }
 
+    private void markRead(int id) {
+        for (TopicHolder tp : currentTopics) {
+            if (tp._id == id) {
+                tp.unread = 0;
+                break;
+            }
+        }
+        writeBackTopic();
+    }
     private void addTopicMessage(long id, long smsId, long time, String box) {
         Cursor checkCursor = dbWrite.query(TopicMessageEntity.TABLE_NAME,
                 new String[]{"count(*)"},
