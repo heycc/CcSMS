@@ -35,7 +35,7 @@ public class TopicAdapter extends CursorAdapter {
         tvTime.setText(getNiceTime(cursor.getLong(cursor.getColumnIndexOrThrow(TopicEntity.COLUMN_RECENT_TIME))));
 
         String unread = cursor.getString(cursor.getColumnIndex(TopicEntity.COLUMN_UNREAD));
-        tvUnread.setText(Integer.parseInt(unread) == 0 ? "" : unread + "");
+        tvUnread.setText(Integer.parseInt(unread) == 0 ? null : unread + "");
     }
 
     public String getNiceTime(long millis) {

@@ -12,16 +12,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.heycc.ccsms.R;
 
 public class ViewTopicActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int onceLoadLimit = 50;
-    SQLiteDatabase db;
-    int topicId;
+    private ListView listView;
+    private SQLiteDatabase db;
+    private int topicId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,20 +40,13 @@ public class ViewTopicActivity extends AppCompatActivity
             actionBar.setTitle(topicTitle);
         }
 
+        listView = (ListView) findViewById(R.id.list_message);
         db = new DBHelper(this).getReadableDatabase();
 
-        this.loadMessage(topicId);
-
-        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
-        scrollview.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-        });
+        this.loadMessage();
     }
 
-    private void loadMessage(int topicId) {
+    private void loadMessage() {
         Cursor cursor = db.query(TopicMessageEntity.TABLE_NAME,
                 null,
                 TopicMessageEntity.COLUMN_TOPIC_ID + "=?",
@@ -79,13 +72,22 @@ public class ViewTopicActivity extends AppCompatActivity
                 "_ID in (" + makePlaceholders(smsIds.length) + ")",
                 smsIds,
                 "date asc");
+        listView.setAdapter(new TopicMessageAdapter(this, smsCursor, true));
+        listView.scrollTo(0, listView.getHeight());
 
-        TextView textView = (TextView) findViewById(R.id.message_view);
-        while (smsCursor.moveToNext()) {
-            textView.append(TopicMessageEntity.getNiceTime(smsCursor.getLong(smsCursor.getColumnIndex("date")))
-                    + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
-        }
-        smsCursor.close();
+//        TextView textView = (TextView) findViewById(R.id.message_view);
+//        while (smsCursor.moveToNext()) {
+//            textView.append(TopicMessageEntity.getNiceTime(smsCursor.getLong(smsCursor.getColumnIndex("date")))
+//                    + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
+//        }
+//        smsCursor.close();
+//        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
+//        scrollview.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+//            }
+//        });
     }
 
     private String makePlaceholders(int len) {

@@ -9,7 +9,7 @@
     tools:context="com.heycc.ccsms.model.ViewTopicActivity"
     tools:showIn="@layout/activity_view_topic">
 
-    <ScrollView
+    <!--ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,16 @@
             android:id="@+id/message_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </ScrollView>
+    </ScrollView-->
+    <ListView
+        android:id="@+id/list_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/button_send"
+        android:divider="#ffffff"
+        android:dividerHeight="0dp"
+        android:stackFromBottom="false"
+        android:transcriptMode="alwaysScroll" />
 
     <EditText
         android:id="@+id/text_input"
