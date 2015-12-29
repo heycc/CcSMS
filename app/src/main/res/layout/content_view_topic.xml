@@ -29,8 +29,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/button_send"
+        android:background="#f3f3f3"
         android:divider="#ffffff"
         android:dividerHeight="0dp"
+        android:paddingBottom="@dimen/message_list_pading_bottom"
         android:stackFromBottom="false"
         android:transcriptMode="alwaysScroll" />
 

@@ -2,32 +2,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/msg_time"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/time_text_height"
+        android:layout_height="@dimen/msg_time_height"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/msg_time_margin_top"
+        android:background="#e3e3e3"
         android:text="--time--" />
 
     <ImageView
         android:id="@+id/msg_icon"
-        android:layout_width="@dimen/icon_length"
-        android:layout_height="@dimen/icon_length"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
+        android:layout_width="@dimen/msg_icon_length"
+        android:layout_height="@dimen/msg_icon_length"
         android:layout_below="@+id/msg_time"
-        android:layout_marginLeft="@dimen/icon_margin_left"
-        android:layout_marginRight="@dimen/icon_margin_right"
+        android:layout_marginBottom="@dimen/msg_icon_margin_bottom"
+        android:layout_marginLeft="@dimen/msg_icon_margin_left"
+        android:layout_marginRight="@dimen/msg_icon_margin_right"
+        android:layout_marginTop="@dimen/msg_icon_margin_top"
         android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/msg_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/msg_icon"
+        android:layout_toRightOf="@+id/msg_icon"
+        android:text="address"
+        android:textSize="@dimen/msg_address_size" />
 
     <TextView
         android:id="@+id/msg_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/msg_time"
+        android:layout_below="@+id/msg_address"
+        android:layout_marginTop="@dimen/msg_text_margin_top"
         android:layout_toRightOf="@+id/msg_icon"
-        android:background="#f8f6f1"
+        android:background="#ffffff"
+        android:padding="@dimen/msg_text_padding"
+        android:text="here goes\nmessag"
+        android:textColor="#000000"
         android:textSize="@dimen/msg_text_size" />
 </RelativeLayout>
