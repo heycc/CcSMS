@@ -56,7 +56,8 @@ public class TopicMessageAdapter extends CursorAdapter {
         iconView.setLayoutParams(iconViewLayout);
 
         // address view layout
-        RelativeLayout.LayoutParams addressViewLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+        RelativeLayout.LayoutParams addressViewLayout = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         addressViewLayout.addRule(RelativeLayout.ALIGN_TOP, R.id.msg_icon);
         addressViewLayout.addRule(RelativeLayout.RIGHT_OF, R.id.msg_icon);
@@ -64,7 +65,8 @@ public class TopicMessageAdapter extends CursorAdapter {
         addressView.setText(cursor.getString(cursor.getColumnIndex("address")));
 
         // text view layout
-        RelativeLayout.LayoutParams textViewLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+        RelativeLayout.LayoutParams textViewLayout = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         textViewLayout.addRule(RelativeLayout.RIGHT_OF, R.id.msg_icon);
         textViewLayout.addRule(RelativeLayout.BELOW, R.id.msg_address);
