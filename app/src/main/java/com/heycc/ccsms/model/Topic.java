@@ -114,7 +114,12 @@ public class Topic {
 
         while (cursor.moveToNext()) {
             boolean matched = false;
-            int unread = 0;
+            boolean unread = false;
+
+            if (cursor.getInt(cursor.getColumnIndex("read")) == 0) {
+                unread = true;
+            }
+
             for (TopicHolder tp : currentTopics) {
                 // The new message match some topic, update recent_time and recent_msg if necessary
                 if (tp.matchMessage(cursor.getString(cursor.getColumnIndex("address")),
@@ -123,29 +128,30 @@ public class Topic {
                         tp.recent_time = cursor.getLong(cursor.getColumnIndex("date"));
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
                     }
-                    if (cursor.getInt(cursor.getColumnIndex("read")) == 0) {
-                        tp.increaseUnread();
-                    }
                     // Add to topicMessage
                     addTopicMessage(tp._id,
                             cursor.getLong(cursor.getColumnIndex("_ID")),
                             cursor.getLong(cursor.getColumnIndex("date")),
                             "inbox");
                     matched = true;
+                    if (unread) {
+                        tp.increaseUnread();
+                    }
                 }
             }
+
             // The new message match none, create a topic, and insert into db to get the id
             if (!matched) {
                 String title = TopicEntity.getSmartTitle(cursor.getString(cursor.getColumnIndex("body")));
                 title = (title == null) ? cursor.getString(cursor.getColumnIndex("address")) : title;
 
-                // For new topic, insert into db to get it's _ID value
+                // For new topic, insert into db to get its _ID value
                 ContentValues cv = new ContentValues();
                 cv.put(TopicEntity.COLUMN_NAME, title);
                 cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
                 cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
                 cv.put(TopicEntity.COLUMN_HIDDEN, "0");
-                cv.put(TopicEntity.COLUMN_UNREAD, "1");
+                cv.put(TopicEntity.COLUMN_UNREAD, unread ? "1" : "0");
                 long theId = dbWrite.insert(TopicEntity.TABLE_NAME, null, cv);
 
                 currentTopics.add(new TopicHolder(theId,
@@ -154,7 +160,7 @@ public class Topic {
                         cursor.getLong(cursor.getColumnIndex("date")),
                         TopicEntity.CONDITION_ADDRESS + TopicEntity.CONDITION_VALUE_SEP +
                                 cursor.getString(cursor.getColumnIndex("address")),
-                        1));
+                        unread ? 1 : 0));
 
                 addTopicMessage(theId,
                         cursor.getLong(cursor.getColumnIndex("_ID")),
@@ -162,7 +168,6 @@ public class Topic {
                         "inbox");
             }
         }
-
         writeBackTopic();
     }
 
@@ -254,21 +259,23 @@ public class Topic {
             this.recent_time = time;
             this.unread = unread;
 
-            for (String line : condition.split(TopicEntity.CONDITION_LINE_SEP)) {
-                String[] values = line.split(TopicEntity.CONDITION_VALUE_SEP);
-                switch (values[0]) {
-                    case TopicEntity.CONDITION_ADDRESS:
-                        for (int i = 1; i < values.length; i++) {
-                            this.addressList.add(values[i]);
-                        }
-                        break;
-                    case TopicEntity.CONDITION_KEYWORD:
-                        for (int i = 1; i < values.length; i++) {
-                            this.keywordList.add(values[i]);
-                        }
-                        break;
-                    default:
-                        break;
+            if (condition != null) {
+                for (String line : condition.split(TopicEntity.CONDITION_LINE_SEP)) {
+                    String[] values = line.split(TopicEntity.CONDITION_VALUE_SEP);
+                    switch (values[0]) {
+                        case TopicEntity.CONDITION_ADDRESS:
+                            for (int i = 1; i < values.length; i++) {
+                                this.addressList.add(values[i]);
+                            }
+                            break;
+                        case TopicEntity.CONDITION_KEYWORD:
+                            for (int i = 1; i < values.length; i++) {
+                                this.keywordList.add(values[i]);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -288,6 +295,7 @@ public class Topic {
         public void increaseUnread() {
             this.unread += 1;
         }
+
         public boolean matchMessage(String address, String body) {
             for (String addr : this.addressList) {
                 if (addr.equals(address)) {

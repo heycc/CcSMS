@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SMS_LOADER:
-                String readFilter = (topic.getCount() > 0) ? "read in (\"0\")" : "read in (\"0\",\"1\")";
+//                String readFilter = (topic.getCount() > 0) ? "read in (\"0\")" : "read in (\"0\",\"1\")";
                 return new CursorLoader(this,
                         Uri.parse("content://sms/inbox"),
                         null,
-                        readFilter + " and date > ?",
+                        "date > ?",
                         new String[]{"" + topic.getLastest()},
                         "date desc");
             default:
