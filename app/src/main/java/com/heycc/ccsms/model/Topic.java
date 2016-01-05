@@ -58,7 +58,7 @@ public class Topic {
                         currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)),
                         currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD))));
-                lastest = max(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)), lastest);
+                setLastest(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)));
             }
         }
         currentCursor.close();
@@ -75,6 +75,10 @@ public class Topic {
 
     public long getLastest() {
         return lastest;
+    }
+
+    private void setLastest(long time) {
+        lastest = max(lastest, time);
     }
 
     private long max(long a, long b) {
@@ -113,9 +117,11 @@ public class Topic {
         }
 
         while (cursor.moveToNext()) {
-            boolean matched = false;
-            boolean unread = false;
+            setLastest(cursor.getLong(cursor.getColumnIndex("date")));
 
+            boolean matched = false;
+
+            boolean unread = false;
             if (cursor.getInt(cursor.getColumnIndex("read")) == 0) {
                 unread = true;
             }
@@ -129,10 +135,10 @@ public class Topic {
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
                     }
                     // Add to topicMessage
-                    addTopicMessage(tp._id,
-                            cursor.getLong(cursor.getColumnIndex("_ID")),
-                            cursor.getLong(cursor.getColumnIndex("date")),
-                            "inbox");
+//                    addTopicMessage(tp._id,
+//                            cursor.getLong(cursor.getColumnIndex("_ID")),
+//                            cursor.getLong(cursor.getColumnIndex("date")),
+//                            "inbox");
                     matched = true;
                     if (unread) {
                         tp.increaseUnread();
@@ -142,12 +148,13 @@ public class Topic {
 
             // The new message match none, create a topic, and insert into db to get the id
             if (!matched) {
-                String title = TopicEntity.getSmartTitle(cursor.getString(cursor.getColumnIndex("body")));
-                title = (title == null) ? cursor.getString(cursor.getColumnIndex("address")) : title;
+//                String[] titleKeyword = TopicEntity.getSmartTitle(cursor.getString(cursor.getColumnIndex("body")));
+//                String title = (titleKeyword == null) ? cursor.getString(cursor.getColumnIndex("address")) : titleKeyword[0];
+//                String keyword = (titleKeyword == null) ? "" : titleKeyword[1];
 
                 // For new topic, insert into db to get its _ID value
                 ContentValues cv = new ContentValues();
-                cv.put(TopicEntity.COLUMN_NAME, title);
+//                cv.put(TopicEntity.COLUMN_NAME, title);
                 cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
                 cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
                 cv.put(TopicEntity.COLUMN_HIDDEN, "0");
@@ -158,14 +165,15 @@ public class Topic {
                         null,
                         cursor.getString(cursor.getColumnIndex("body")),
                         cursor.getLong(cursor.getColumnIndex("date")),
-                        TopicEntity.CONDITION_ADDRESS + TopicEntity.CONDITION_VALUE_SEP +
-                                cursor.getString(cursor.getColumnIndex("address")),
+                        TopicEntity.CONDITION_ADDRESS
+                                + TopicEntity.CONDITION_VALUE_SEP
+                                + cursor.getString(cursor.getColumnIndex("address")),
                         unread ? 1 : 0));
 
-                addTopicMessage(theId,
-                        cursor.getLong(cursor.getColumnIndex("_ID")),
-                        cursor.getLong(cursor.getColumnIndex("date")),
-                        "inbox");
+//                addTopicMessage(theId,
+//                        cursor.getLong(cursor.getColumnIndex("_ID")),
+//                        cursor.getLong(cursor.getColumnIndex("date")),
+//                        "inbox");
             }
         }
         writeBackTopic();
@@ -277,13 +285,15 @@ public class Topic {
                             break;
                     }
                 }
+            } else {
+                Log.w("TopicHolder", "condition null. This should never happens!");
             }
 
             if (title == null || title.trim().length() == 0) {
-                String tmp = TopicEntity.getSmartTitle(body);
-                if (tmp != null) {
-                    this.title = tmp;
-                    this.keywordList.add(tmp);
+                String[] titleKeyword = TopicEntity.getSmartTitle(body);
+                if (titleKeyword != null) {
+                    this.title = titleKeyword[0];
+                    this.keywordList.add(titleKeyword[1]);
                 } else {
                     this.title = this.addressList.get(0);
                 }

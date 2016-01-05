@@ -83,18 +83,17 @@ abstract class TopicEntity implements BaseColumns {
         }
     }
 
-    static String getSmartTitle(String body) {
+    static String[] getSmartTitle(String body) {
         String[] regs = new String[]{"^【(.*)】",
                 "【(.*)】$",
                 "^\\[(.*)\\]",
-                "\\[(.*)\\]$",
-                "【(.*)】",
-                "\\[(.*)\\]"};
+                "\\[(.*)\\]$"};
         for (String reg : regs) {
             Pattern pattern = Pattern.compile(reg);
             Matcher matcher = pattern.matcher(body);
             if (matcher.find()) {
-                return matcher.group(1);
+                return new String[]{matcher.group(1),
+                        reg.replaceAll("\\(\\.\\*\\)", matcher.group(1))};
             }
         }
         return null;
