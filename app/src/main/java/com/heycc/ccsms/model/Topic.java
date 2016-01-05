@@ -116,6 +116,8 @@ public class Topic {
             return;
         }
 
+        int changeCursorCnt = 100;
+
         while (cursor.moveToNext()) {
             setLastest(cursor.getLong(cursor.getColumnIndex("date")));
 
@@ -135,10 +137,10 @@ public class Topic {
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
                     }
                     // Add to topicMessage
-//                    addTopicMessage(tp._id,
-//                            cursor.getLong(cursor.getColumnIndex("_ID")),
-//                            cursor.getLong(cursor.getColumnIndex("date")),
-//                            "inbox");
+                    addTopicMessage(tp._id,
+                            cursor.getLong(cursor.getColumnIndex("_ID")),
+                            cursor.getLong(cursor.getColumnIndex("date")),
+                            "inbox");
                     matched = true;
                     if (unread) {
                         tp.increaseUnread();
@@ -148,13 +150,8 @@ public class Topic {
 
             // The new message match none, create a topic, and insert into db to get the id
             if (!matched) {
-//                String[] titleKeyword = TopicEntity.getSmartTitle(cursor.getString(cursor.getColumnIndex("body")));
-//                String title = (titleKeyword == null) ? cursor.getString(cursor.getColumnIndex("address")) : titleKeyword[0];
-//                String keyword = (titleKeyword == null) ? "" : titleKeyword[1];
-
                 // For new topic, insert into db to get its _ID value
                 ContentValues cv = new ContentValues();
-//                cv.put(TopicEntity.COLUMN_NAME, title);
                 cv.put(TopicEntity.COLUMN_RECENT_TIME, cursor.getLong(cursor.getColumnIndex("date")));
                 cv.put(TopicEntity.COLUMN_RECENT_MSG, cursor.getString(cursor.getColumnIndex("body")));
                 cv.put(TopicEntity.COLUMN_HIDDEN, "0");
@@ -170,13 +167,19 @@ public class Topic {
                                 + cursor.getString(cursor.getColumnIndex("address")),
                         unread ? 1 : 0));
 
-//                addTopicMessage(theId,
-//                        cursor.getLong(cursor.getColumnIndex("_ID")),
-//                        cursor.getLong(cursor.getColumnIndex("date")),
-//                        "inbox");
+                addTopicMessage(theId,
+                        cursor.getLong(cursor.getColumnIndex("_ID")),
+                        cursor.getLong(cursor.getColumnIndex("date")),
+                        "inbox");
+            }
+
+            // For each <changeCursorCnt>, call changeCursor once, so the ListView is much responsible
+            if ((cursor.getPosition() + 1) % changeCursorCnt == 0) {
+                changeCursor();
             }
         }
         writeBackTopic();
+        changeCursor();
     }
 
     /**
@@ -212,7 +215,9 @@ public class Topic {
                     TopicEntity._ID + "=?",
                     new String[]{tp._id + ""});
         }
+    }
 
+    private void changeCursor() {
         mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
                 TopicEntity.COLUMN_RECENT_TIME + " desc"));
     }
@@ -225,6 +230,7 @@ public class Topic {
             }
         }
         writeBackTopic();
+        changeCursor();
     }
     private void addTopicMessage(long id, long smsId, long time, String box) {
         Cursor checkCursor = dbWrite.query(TopicMessageEntity.TABLE_NAME,
