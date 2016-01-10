@@ -59,6 +59,7 @@ public class Topic {
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)),
                         currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD))));
                 setLastest(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)));
+                Log.d("loadTopic", currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)));
             }
         }
         currentCursor.close();

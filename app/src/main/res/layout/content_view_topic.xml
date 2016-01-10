@@ -9,21 +9,6 @@
     tools:context="com.heycc.ccsms.model.ViewTopicActivity"
     tools:showIn="@layout/activity_view_topic">
 
-    <!--ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button_send"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true">
-
-        <TextView
-            android:id="@+id/message_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </ScrollView-->
     <ListView
         android:id="@+id/list_message"
         android:layout_width="match_parent"

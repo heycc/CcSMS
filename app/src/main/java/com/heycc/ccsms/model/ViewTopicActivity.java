@@ -74,20 +74,6 @@ public class ViewTopicActivity extends AppCompatActivity
                 "date asc");
         listView.setAdapter(new TopicMessageAdapter(this, smsCursor, true));
         listView.scrollTo(0, listView.getHeight());
-
-//        TextView textView = (TextView) findViewById(R.id.message_view);
-//        while (smsCursor.moveToNext()) {
-//            textView.append(TopicMessageEntity.getNiceTime(smsCursor.getLong(smsCursor.getColumnIndex("date")))
-//                    + "\n" + smsCursor.getString(smsCursor.getColumnIndex("body")) + "\n");
-//        }
-//        smsCursor.close();
-//        final ScrollView scrollview = ((ScrollView) findViewById(R.id.scroll_view));
-//        scrollview.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                scrollview.fullScroll(ScrollView.FOCUS_DOWN);
-//            }
-//        });
     }
 
     private String makePlaceholders(int len) {
@@ -117,8 +103,10 @@ public class ViewTopicActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_edit_view_group:
-                startActivity(new Intent(this, EditTopicActivity.class));
+            case R.id.action_edit_topic:
+                Intent intent = new Intent(this, EditTopicActivity.class);
+                intent.putExtra("id", topicId);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -127,8 +115,8 @@ public class ViewTopicActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getIntent();
-        String topicId = intent.getStringExtra(TopicEntity._ID);
+//        Intent intent = getIntent();
+//        String topicId = intent.getStringExtra(TopicEntity._ID);
         return null;
     }
 
