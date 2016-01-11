@@ -119,9 +119,9 @@ public class Topic {
             return;
         }
 
-//        int changeCursorCnt = 100;
-
         while (cursor.moveToNext()) {
+            // This function is called when cursor data changed,
+            // however the start time of the cursor is not changed
             if (cursor.getLong(cursor.getColumnIndex("date")) <= lastest) {
                 continue;
             }
@@ -179,14 +179,10 @@ public class Topic {
                         cursor.getLong(cursor.getColumnIndex("date")),
                         "inbox");
             }
-
-//            // For each <changeCursorCnt>, call changeCursor once, so the ListView is much responsible
-//            if ((cursor.getPosition() + 1) % changeCursorCnt == 0) {
-//                changeCursor();
-//            }
         }
         writeBackTopic();
         changeCursor();
+        cursor.close();
     }
 
     /**
@@ -237,6 +233,8 @@ public class Topic {
                 break;
             }
         }
+//        writeBackTopic();
+//        changeCursor();
     }
 
     private void addTopicMessage(long id, long smsId, long time, String box) {

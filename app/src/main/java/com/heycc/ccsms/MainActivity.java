@@ -72,17 +72,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        Log.w("onStop", "called");
-//        topic.writeBackTopic();
-//    }
-//
-//    @Override
-//    public void onResume(){
-//        super.onResume();
-//        Log.w("onResume", "called");
-//        topic.changeCursor();
-//    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.w("onStop", "called");
+        topic.writeBackTopic();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.w("onResume", "called");
+        topic.changeCursor();
+    }
 }
