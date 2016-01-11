@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SMS_LOADER:
-//                String readFilter = (topic.getCount() > 0) ? "read in (\"0\")" : "read in (\"0\",\"1\")";
+                Log.w("onCreateLoader", topic.getLastest() + "");
                 return new CursorLoader(this,
                         Uri.parse("content://sms/inbox"),
                         null,
@@ -70,4 +71,18 @@ public class MainActivity extends AppCompatActivity
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
+
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        Log.w("onStop", "called");
+//        topic.writeBackTopic();
+//    }
+//
+//    @Override
+//    public void onResume(){
+//        super.onResume();
+//        Log.w("onResume", "called");
+//        topic.changeCursor();
+//    }
 }

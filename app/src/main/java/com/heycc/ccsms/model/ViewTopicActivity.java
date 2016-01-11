@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -39,6 +40,8 @@ public class ViewTopicActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(topicTitle);
         }
+
+        Log.w("onCreate", "ViewTopicActivity called");
 
         listView = (ListView) findViewById(R.id.list_message);
         db = new DBHelper(this).getReadableDatabase();

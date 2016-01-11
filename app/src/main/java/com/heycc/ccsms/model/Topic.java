@@ -48,8 +48,9 @@ public class Topic {
      * load topics into memory
      */
     private void loadTopic() {
-        Cursor currentCursor = dbWrite.query(TopicEntity.TABLE_NAME,
+        Cursor currentCursor = dbRead.query(TopicEntity.TABLE_NAME,
                 null, null, null, null, null, null);
+        Log.w("loadTopic", currentCursor.getCount() + "");
         if (currentCursor.getCount() > 0) {
             while (currentCursor.moveToNext()) {
                 this.currentTopics.add(new TopicHolder(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity._ID)),
@@ -59,7 +60,8 @@ public class Topic {
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)),
                         currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD))));
                 setLastest(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)));
-                Log.d("loadTopic", currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)));
+                Log.w("loadTopic", currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)) + " "
+                        + currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD)));
             }
         }
         currentCursor.close();
@@ -117,9 +119,13 @@ public class Topic {
             return;
         }
 
-        int changeCursorCnt = 100;
+//        int changeCursorCnt = 100;
 
         while (cursor.moveToNext()) {
+            if (cursor.getLong(cursor.getColumnIndex("date")) <= lastest) {
+                continue;
+            }
+
             setLastest(cursor.getLong(cursor.getColumnIndex("date")));
 
             boolean matched = false;
@@ -174,10 +180,10 @@ public class Topic {
                         "inbox");
             }
 
-            // For each <changeCursorCnt>, call changeCursor once, so the ListView is much responsible
-            if ((cursor.getPosition() + 1) % changeCursorCnt == 0) {
-                changeCursor();
-            }
+//            // For each <changeCursorCnt>, call changeCursor once, so the ListView is much responsible
+//            if ((cursor.getPosition() + 1) % changeCursorCnt == 0) {
+//                changeCursor();
+//            }
         }
         writeBackTopic();
         changeCursor();
@@ -186,7 +192,8 @@ public class Topic {
     /**
      * write back to db, and reload cursor
      */
-    private void writeBackTopic() {
+    public void writeBackTopic() {
+        Log.w("writeBackTopic", "called");
         for (TopicHolder tp : currentTopics) {
             ContentValues cv = new ContentValues();
             cv.put(TopicEntity.COLUMN_NAME, tp.title);
@@ -218,7 +225,7 @@ public class Topic {
         }
     }
 
-    private void changeCursor() {
+    public void changeCursor() {
         mga.changeCursor(dbRead.query(TopicEntity.TABLE_NAME, null, null, null, null, null,
                 TopicEntity.COLUMN_RECENT_TIME + " desc"));
     }
@@ -230,9 +237,8 @@ public class Topic {
                 break;
             }
         }
-        writeBackTopic();
-        changeCursor();
     }
+
     private void addTopicMessage(long id, long smsId, long time, String box) {
         Cursor checkCursor = dbWrite.query(TopicMessageEntity.TABLE_NAME,
                 new String[]{"count(*)"},
@@ -311,6 +317,7 @@ public class Topic {
 
         public void increaseUnread() {
             this.unread += 1;
+            Log.w("increaseUnread", this.title + " " + unread + "");
         }
 
         public boolean matchMessage(String address, String body) {
