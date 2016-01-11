@@ -119,6 +119,7 @@ public class Topic {
             return;
         }
 
+        long tmpLatest = lastest;
         while (cursor.moveToNext()) {
             // This function is called when cursor data changed,
             // however the start time of the cursor is not changed
@@ -126,7 +127,7 @@ public class Topic {
                 continue;
             }
 
-            setLastest(cursor.getLong(cursor.getColumnIndex("date")));
+            tmpLatest = max(cursor.getLong(cursor.getColumnIndex("date")), tmpLatest);
 
             boolean matched = false;
 
@@ -181,6 +182,7 @@ public class Topic {
             }
         }
         writeBackTopic();
+        setLastest(tmpLatest);
         changeCursor();
         cursor.close();
     }
