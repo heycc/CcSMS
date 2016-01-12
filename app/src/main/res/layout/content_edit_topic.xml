@@ -12,63 +12,82 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
+        android:gravity="center_vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/edit_topic_title"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="@string/edit_topic_title"
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/edit_topic_title_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/edit_topic_title"
             android:text="Title"
+            android:textAlignment="viewEnd"
             android:textSize="18sp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
+        android:gravity="center_vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/edit_topic_address"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Address" />
+            android:text="@string/edit_topic_address"
+            android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/edit_topic_address_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="123456" />
+            android:layout_toRightOf="@+id/edit_topic_address"
+            android:text="10086"
+            android:textAlignment="viewEnd"
+            android:textSize="18sp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
+        android:gravity="center_vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/edit_topic_keyword"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Condition" />
+            android:text="@string/edit_topic_keyword"
+            android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/edit_topic_condition_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="Keyword" />
+            android:layout_toRightOf="@+id/edit_topic_keyword"
+            android:text="China Mobile"
+            android:textAlignment="viewEnd"
+            android:textSize="18sp" />
     </RelativeLayout>
 </LinearLayout>

@@ -184,7 +184,7 @@ public class Topic {
         writeBackTopic();
         setLastest(tmpLatest);
         changeCursor();
-        cursor.close();
+        //cursor.close();
     }
 
     /**

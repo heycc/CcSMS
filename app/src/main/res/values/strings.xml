@@ -9,4 +9,8 @@
     <string name="title_activity_view_group">View Message</string>
     <string name="action_setting_view_group">Setting</string>
     <string name="action_delete_view_group">Delete</string>
+
+    <string name="edit_topic_title">Title</string>
+    <string name="edit_topic_address">Address</string>
+    <string name="edit_topic_keyword">Keyword</string>
 </resources>
