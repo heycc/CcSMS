@@ -5,17 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by cc on 12/2/15.
  */
 public class Topic {
+    private static final int onceLoadLimit = 999;
     private final Context context;
     private SQLiteDatabase dbRead;
     private SQLiteDatabase dbWrite;
@@ -58,7 +61,8 @@ public class Topic {
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_MSG)),
                         currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)),
                         currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)),
-                        currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD))));
+                        currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD)),
+                        currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_IDS))));
                 setLastest(currentCursor.getLong(currentCursor.getColumnIndex(TopicEntity.COLUMN_RECENT_TIME)));
                 Log.w("loadTopic", currentCursor.getString(currentCursor.getColumnIndex(TopicEntity.COLUMN_CONDITION)) + " "
                         + currentCursor.getInt(currentCursor.getColumnIndex(TopicEntity.COLUMN_UNREAD)));
@@ -145,10 +149,13 @@ public class Topic {
                         tp.recent_msg = cursor.getString(cursor.getColumnIndex("body"));
                     }
                     // Add to topicMessage
-                    addTopicMessage(tp._id,
-                            cursor.getLong(cursor.getColumnIndex("_ID")),
-                            cursor.getLong(cursor.getColumnIndex("date")),
-                            "inbox");
+//                    addTopicMessage(tp._id,
+//                            cursor.getLong(cursor.getColumnIndex("_ID")),
+//                            cursor.getLong(cursor.getColumnIndex("date")),
+//                            "inbox");
+                    if (!tp.smsList.contains(cursor.getInt(cursor.getColumnIndex("_ID")))) {
+                        tp.smsList.add(cursor.getInt(cursor.getColumnIndex("_ID")));
+                    }
                     matched = true;
                     if (unread) {
                         tp.increaseUnread();
@@ -173,12 +180,13 @@ public class Topic {
                         TopicEntity.CONDITION_ADDRESS
                                 + TopicEntity.CONDITION_VALUE_SEP
                                 + cursor.getString(cursor.getColumnIndex("address")),
-                        unread ? 1 : 0));
+                        unread ? 1 : 0,
+                        cursor.getInt(cursor.getColumnIndex("_ID")) + ""));
 
-                addTopicMessage(theId,
-                        cursor.getLong(cursor.getColumnIndex("_ID")),
-                        cursor.getLong(cursor.getColumnIndex("date")),
-                        "inbox");
+//                addTopicMessage(theId,
+//                        cursor.getLong(cursor.getColumnIndex("_ID")),
+//                        cursor.getLong(cursor.getColumnIndex("date")),
+//                        "inbox");
             }
         }
         writeBackTopic();
@@ -199,6 +207,13 @@ public class Topic {
             cv.put(TopicEntity.COLUMN_RECENT_MSG, tp.recent_msg);
             cv.put(TopicEntity.COLUMN_UNREAD, tp.unread);
             cv.put(TopicEntity.COLUMN_HIDDEN, tp.hidden);
+
+            Collections.sort(tp.smsList);
+            while (tp.smsList.size() > onceLoadLimit) {
+                tp.smsList.remove(0);
+            }
+            cv.put(TopicEntity.COLUMN_IDS, TextUtils.join(",", tp.smsList));
+
             // generate condition string
             String condition = "";
             String tmp = "";
@@ -273,12 +288,17 @@ public class Topic {
         int unread = 0;
         ArrayList<String> addressList = new ArrayList<>();
         ArrayList<String> keywordList = new ArrayList<>();
+        ArrayList<Integer> smsList = new ArrayList<>();
 
-        public TopicHolder(long id, String title, String body, long time, String condition, int unread) {
+        public TopicHolder(long id, String title, String body, long time, String condition, int unread, String sms_ids) {
             this._id = id;
             this.recent_msg = body;
             this.recent_time = time;
             this.unread = unread;
+
+            for (String sms_id : sms_ids.split(",")) {
+                this.smsList.add(Integer.parseInt(sms_id));
+            }
 
             if (condition != null) {
                 for (String line : condition.split(TopicEntity.CONDITION_LINE_SEP)) {

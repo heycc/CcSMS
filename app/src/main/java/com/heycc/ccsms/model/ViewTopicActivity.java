@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +20,7 @@ import com.heycc.ccsms.R;
 
 public class ViewTopicActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int onceLoadLimit = 50;
+    private static final int onceLoadLimit = 999;
     private ListView listView;
     private SQLiteDatabase db;
     private int topicId;
@@ -41,7 +42,7 @@ public class ViewTopicActivity extends AppCompatActivity
             actionBar.setTitle(topicTitle);
         }
 
-        Log.w("onCreate", "ViewTopicActivity called");
+        Log.w("ViewTopicActivity", "onCreate");
 
         listView = (ListView) findViewById(R.id.list_message);
         db = new DBHelper(this).getReadableDatabase();
@@ -50,6 +51,35 @@ public class ViewTopicActivity extends AppCompatActivity
     }
 
     private void loadMessage() {
+        Cursor cursor = db.query(TopicEntity.TABLE_NAME,
+                null,
+                TopicEntity._ID + "=?",
+                new String[]{"" + topicId},
+                null,
+                null,
+                null,
+                null);
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            db.close();
+            return;
+        }
+        cursor.moveToFirst();
+        String sms_id_str = cursor.getString(cursor.getColumnIndex(TopicEntity.COLUMN_IDS));
+        String[] smsIds = sms_id_str.split(",");
+
+        Log.w("ViewTopicActivity", TextUtils.join(",", smsIds));
+
+        Cursor smsCursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
+                null,
+                "_ID in (" + makePlaceholders(smsIds.length) + ")",
+                smsIds,
+                "date asc");
+        listView.setAdapter(new TopicMessageAdapter(this, smsCursor, true));
+        listView.scrollTo(0, listView.getHeight());
+    }
+
+    private void loadMessage2() {
         Cursor cursor = db.query(TopicMessageEntity.TABLE_NAME,
                 null,
                 TopicMessageEntity.COLUMN_TOPIC_ID + "=?",
@@ -69,6 +99,8 @@ public class ViewTopicActivity extends AppCompatActivity
             smsIds[i] = cursor.getString(cursor.getColumnIndex(TopicMessageEntity.COLUMN_SMS_ID));
         }
         cursor.close();
+
+        Log.w("ViewTopicActivity", TextUtils.join(",", smsIds));
 
         Cursor smsCursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
                 null,
@@ -131,5 +163,11 @@ public class ViewTopicActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        loadMessage();
     }
 }
